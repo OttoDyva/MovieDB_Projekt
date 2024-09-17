@@ -22,6 +22,7 @@ public class MovieService {
     private static final String BASE_URL_MOVIE = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_DISCOVER = "https://api.themoviedb.org/3/discover/movie";
     private static final String BASE_URL_CREDITS = "https://api.themoviedb.org/3/movie/";
+    private static final String BASE_URL_COUNTRY = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_original_language=da";
     static ObjectMapper om = new ObjectMapper();
 
     public static String getMovieById(int id) throws IOException, InterruptedException {
@@ -44,8 +45,8 @@ public class MovieService {
         return movieDTO.toString();
     }
 
-    public static String getMovieByReleaseYear(int releaseYear) throws IOException, InterruptedException {
-        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
+    public static String getMovieByLanguage(String original_language) throws IOException, InterruptedException {
+        String url = BASE_URL_COUNTRY + "&api_key=" + API_KEY;
         om.registerModule(new JavaTimeModule());
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
@@ -59,21 +60,44 @@ public class MovieService {
         MovieListDTO movieDTOList = om.readValue(response.body(), MovieListDTO.class);
         List<MovieDTO> movieDTOS = movieDTOList.getResults();
 
-        boolean found = false;
 
         for (MovieDTO movieDTO : movieDTOS) {
-            if (movieDTO.getRelease_date().getYear() == releaseYear) {
                 System.out.println(movieDTO);
-                found = true;
-            }
-        }
-
-        if(!found) {
-            System.out.println("No movies found for the year: " + releaseYear);
         }
 
         return response.body();
     }
+
+        public static String getMovieByReleaseYear ( int releaseYear) throws IOException, InterruptedException {
+            String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
+            om.registerModule(new JavaTimeModule());
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            MovieListDTO movieDTOList = om.readValue(response.body(), MovieListDTO.class);
+            List<MovieDTO> movieDTOS = movieDTOList.getResults();
+
+            boolean found = false;
+
+            for (MovieDTO movieDTO : movieDTOS) {
+                if (movieDTO.getRelease_date().getYear() == releaseYear) {
+                    System.out.println(movieDTO);
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                System.out.println("No movies found for the year: " + releaseYear);
+            }
+
+            return response.body();
+        }
 
     /*public static String getMovieByRating(double lowRating, double highRating) throws IOException, InterruptedException {
         String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
@@ -108,55 +132,55 @@ public class MovieService {
 
      */
 
-    public static String filterMoviesByRealeaseYear() throws IOException, InterruptedException {
-        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=20";
-        om.registerModule(new JavaTimeModule());
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
+        public static String filterMoviesByRealeaseYear (int rel) throws IOException, InterruptedException {
+            String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=20";
+            om.registerModule(new JavaTimeModule());
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        MovieListDTO movieDTOList = om.readValue(response.body(), MovieListDTO.class);
-        List<MovieDTO> movieDTOS = movieDTOList.getResults();
+            MovieListDTO movieDTOList = om.readValue(response.body(), MovieListDTO.class);
+            List<MovieDTO> movieDTOS = movieDTOList.getResults();
 
-        List<MovieDTO> filterMovies = movieDTOS.stream().sorted(Comparator.comparing(MovieDTO::getRelease_date).reversed()).collect(Collectors.toList());
+            List<MovieDTO> filterMovies = movieDTOS.stream().sorted(Comparator.comparing(MovieDTO::getRelease_date).reversed()).collect(Collectors.toList());
 
-        System.out.println(filterMovies);
-        return response.body();
-    }
-
-    public static String getMovieCreditsByMovieID(int id) throws IOException, InterruptedException {
-        String url = BASE_URL_CREDITS + id + "/credits" + "?api_key=" + API_KEY;
-        om.registerModule(new JavaTimeModule());
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        CreditListDTO creditListDTO = om.readValue(response.body(), CreditListDTO.class);
-        List<CreditDTO> creditCastDTOS = creditListDTO.getCast();
-        List<CreditDTO> creditCrewDTOS = creditListDTO.getCrew();
-
-        List<CreditDTO> allCredits = new ArrayList<>();
-        allCredits.addAll(creditCastDTOS);
-        allCredits.addAll(creditCrewDTOS);
-
-        for (CreditDTO creditDTO : allCredits) {
-            if (creditDTO.getKnown_for_department().equals("Acting")) {
-                System.out.println("Cast: " + creditDTO);
-            } else if (creditDTO.getKnown_for_department().equals("Directing") && creditDTO.getJob().equals("Director")) {
-                System.out.println("Crew: " + creditDTO);
-            }
+            System.out.println(filterMovies);
+            return response.body();
         }
 
-        return creditCastDTOS.toString();
+        public static String getMovieCreditsByMovieID ( int id) throws IOException, InterruptedException {
+            String url = BASE_URL_CREDITS + id + "/credits" + "?api_key=" + API_KEY;
+            om.registerModule(new JavaTimeModule());
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            CreditListDTO creditListDTO = om.readValue(response.body(), CreditListDTO.class);
+            List<CreditDTO> creditCastDTOS = creditListDTO.getCast();
+            List<CreditDTO> creditCrewDTOS = creditListDTO.getCrew();
+
+            List<CreditDTO> allCredits = new ArrayList<>();
+            allCredits.addAll(creditCastDTOS);
+            allCredits.addAll(creditCrewDTOS);
+
+            for (CreditDTO creditDTO : allCredits) {
+                if (creditDTO.getKnown_for_department().equals("Acting")) {
+                    System.out.println("Cast: " + creditDTO);
+                } else if (creditDTO.getKnown_for_department().equals("Directing") && creditDTO.getJob().equals("Director")) {
+                    System.out.println("Crew: " + creditDTO);
+                }
+            }
+
+            return creditCastDTOS.toString();
+        }
     }
-}
