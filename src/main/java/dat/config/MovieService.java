@@ -22,6 +22,7 @@ public class MovieService {
     private static final String BASE_URL_MOVIE = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_DISCOVER = "https://api.themoviedb.org/3/discover/movie";
     private static final String BASE_URL_CREDITS = "https://api.themoviedb.org/3/movie/";
+    private static final String BASE_URL_COUNTRY = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_original_language=da";
     static ObjectMapper om = new ObjectMapper();
 
     public static List<String> goThroughAllPages(String urlWeUse) throws IOException, InterruptedException {
@@ -60,10 +61,33 @@ public class MovieService {
 
         MovieDTO movieDTO = om.readValue(response.body(), MovieDTO.class);
 
-        //System.out.println(movieDTO.getRelease_date().getYear());
+        System.out.println(movieDTO.getRelease_date().getYear());
 
         System.out.println(movieDTO);
         return movieDTO.toString();
+    }
+
+    public static String getMovieByLanguage(String original_language) throws IOException, InterruptedException {
+        String url = BASE_URL_COUNTRY + "&api_key=" + API_KEY;
+        om.registerModule(new JavaTimeModule());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        MovieListDTO movieDTOList = om.readValue(response.body(), MovieListDTO.class);
+        List<MovieDTO> movieDTOS = movieDTOList.getResults();
+
+
+        for (MovieDTO movieDTO : movieDTOS) {
+            System.out.println(movieDTO);
+        }
+
+        return response.body();
     }
 
     public static String getMovieByReleaseYear(int releaseYear) throws IOException, InterruptedException {
