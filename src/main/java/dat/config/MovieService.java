@@ -2,6 +2,8 @@ package dat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import dat.dtos.CreditDTO;
+import dat.dtos.CreditListDTO;
 import dat.dtos.MovieDTO;
 import dat.dtos.MovieListDTO;
 
@@ -10,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +21,7 @@ public class MovieService {
     private static final String API_KEY = System.getenv("api_key");
     private static final String BASE_URL_MOVIE = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_DISCOVER = "https://api.themoviedb.org/3/discover/movie";
+    private static final String BASE_URL_CREDITS = "https://api.themoviedb.org/3/movie/";
     static ObjectMapper om = new ObjectMapper();
 
     public static String getMovieById(int id) throws IOException, InterruptedException {
@@ -121,5 +125,36 @@ public class MovieService {
 
         System.out.println(filterMovies);
         return response.body();
+    }
+
+    public static String getMovieCreditsByMovieID(int id) throws IOException, InterruptedException {
+        String url = BASE_URL_CREDITS + id + "/credits" + "?api_key=" + API_KEY;
+        om.registerModule(new JavaTimeModule());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        CreditListDTO creditListDTO = om.readValue(response.body(), CreditListDTO.class);
+        List<CreditDTO> creditCastDTOS = creditListDTO.getCast();
+        List<CreditDTO> creditCrewDTOS = creditListDTO.getCrew();
+
+        List<CreditDTO> allCredits = new ArrayList<>();
+        allCredits.addAll(creditCastDTOS);
+        allCredits.addAll(creditCrewDTOS);
+
+        for (CreditDTO creditDTO : allCredits) {
+            if (creditDTO.getKnown_for_department().equals("Acting")) {
+                System.out.println("Cast: " + creditDTO);
+            } else if (creditDTO.getKnown_for_department().equals("Directing") && creditDTO.getJob().equals("Director")) {
+                System.out.println("Crew: " + creditDTO);
+            }
+        }
+
+        return creditCastDTOS.toString();
     }
 }
