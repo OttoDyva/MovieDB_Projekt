@@ -24,6 +24,28 @@ public class MovieService {
     private static final String BASE_URL_CREDITS = "https://api.themoviedb.org/3/movie/";
     static ObjectMapper om = new ObjectMapper();
 
+    public static List<String> goThroughAllPages(String urlWeUse) throws IOException, InterruptedException {
+        List<String> allMoviesFromAllPages = new ArrayList<>();
+        String url = urlWeUse + "&page=%d";
+        HttpClient client = HttpClient.newHttpClient();
+
+        for (int page = 1; page <= 20; page++) {
+
+            String forLoopUrl = String.format(url, page);
+            HttpRequest request = HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(forLoopUrl))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            allMoviesFromAllPages.add(response.body());
+        }
+
+        return allMoviesFromAllPages;
+    }
+
     public static String getMovieById(int id) throws IOException, InterruptedException {
         String url = BASE_URL_MOVIE + id + "?api_key=" + API_KEY;
         om.registerModule(new JavaTimeModule());
@@ -38,41 +60,36 @@ public class MovieService {
 
         MovieDTO movieDTO = om.readValue(response.body(), MovieDTO.class);
 
-        System.out.println(movieDTO.getRelease_date().getYear());
+        //System.out.println(movieDTO.getRelease_date().getYear());
 
         System.out.println(movieDTO);
         return movieDTO.toString();
     }
 
     public static String getMovieByReleaseYear(int releaseYear) throws IOException, InterruptedException {
-        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
+        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY;
+        List<String> allPages = goThroughAllPages(url);
         om.registerModule(new JavaTimeModule());
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        MovieListDTO movieDTOList = om.readValue(response.body(), MovieListDTO.class);
-        List<MovieDTO> movieDTOS = movieDTOList.getResults();
-
         boolean found = false;
 
-        for (MovieDTO movieDTO : movieDTOS) {
-            if (movieDTO.getRelease_date().getYear() == releaseYear) {
-                System.out.println(movieDTO);
-                found = true;
+        for (String pageResponse : allPages) {
+            MovieListDTO movieDTOList = om.readValue(pageResponse, MovieListDTO.class);
+            List<MovieDTO> movieDTOS = movieDTOList.getResults();
+
+            for (MovieDTO movieDTO : movieDTOS) {
+                if (movieDTO.getRelease_date().getYear() == releaseYear) {
+                    System.out.println(movieDTO);
+                    found = true;
+                }
             }
         }
 
-        if(!found) {
-            System.out.println("No movies found for the year: " + releaseYear);
+        if (found) {
+            return "No movies found for the year: " + releaseYear;
+        } else {
+            return "nope";
         }
 
-        return response.body();
     }
 
     /*public static String getMovieByRating(double lowRating, double highRating) throws IOException, InterruptedException {
