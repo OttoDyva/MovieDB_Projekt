@@ -19,7 +19,7 @@ public class Main {
 
         //MovieService.getMovieCreditsByMovieID(139);
 
-        MovieService.getMovieByLanguage("da");
+        MovieService.getDanishMovieFrom2019Plus("da");
 
     }
 }
