@@ -10,4 +10,5 @@ import java.util.List;
 public class MovieListDTO {
     private int page;
     private List<MovieDTO> results;
+    private List<CreditListDTO> credits;
 }

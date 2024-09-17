@@ -45,7 +45,7 @@ public class MovieService {
     }
 
     public static String getMovieByReleaseYear(int releaseYear) throws IOException, InterruptedException {
-        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=2";
+        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
         om.registerModule(new JavaTimeModule());
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
@@ -75,7 +75,7 @@ public class MovieService {
         return response.body();
     }
 
-    public static String getMovieByRating(double lowRating, double highRating) throws IOException, InterruptedException {
+    /*public static String getMovieByRating(double lowRating, double highRating) throws IOException, InterruptedException {
         String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
         om.registerModule(new JavaTimeModule());
         HttpClient client = HttpClient.newHttpClient();
@@ -105,6 +105,8 @@ public class MovieService {
 
         return response.body();
     }
+
+     */
 
     public static String filterMoviesByRealeaseYear() throws IOException, InterruptedException {
         String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=20";
