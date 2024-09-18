@@ -113,12 +113,14 @@ public class MovieService {
                         .original_title(movieDTO.getOriginal_title())
                         .genre_ids(movieDTO.getGenre_ids())
                         .genres(genreNames)
+                        .vote_average(movieDTO.getVote_average())
+                        .popularity(movieDTO.getPopularity())
                         .original_language(movieDTO.getOriginal_language())
                         .release_date(movieDTO.getRelease_date())
                         .overview(movieDTO.getOverview())
                         .build();
                 updatedMoviesWithGenres.add(updatedMovieDTO);
-               System.out.println(updatedMoviesWithGenres.stream().toList());
+               //System.out.println(updatedMoviesWithGenres.stream().toList());
             }
         }
         return updatedMoviesWithGenres;

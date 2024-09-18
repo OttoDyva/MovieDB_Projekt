@@ -21,6 +21,8 @@ public class MovieDTO {
     private List<String> genres;
     private String original_language;
     private LocalDate release_date;
+    private float vote_average;
+    private float popularity;
     private String overview;
     private List<CreditDTO> credits;
 

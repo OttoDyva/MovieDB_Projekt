@@ -70,8 +70,9 @@ public class MovieDAO implements IDAO<Movie> {
                 .id(movieDTO.getId())
                 .title(movieDTO.getOriginal_title())
                 .realeaseDate(movieDTO.getRelease_date())
-                //Cook here
-                //.genres()
+                .vote_average(movieDTO.getVote_average())
+                .popularity(movieDTO.getPopularity())
+                .genres(movieDTO.getGenres())
                 .language(movieDTO.getOriginal_language())
                 .build();
     }

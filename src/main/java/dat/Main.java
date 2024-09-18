@@ -1,10 +1,8 @@
 package dat;
 
 import dat.config.HibernateConfig;
-import dat.config.MovieService;
 import dat.daos.GenreDAO;
 import dat.daos.MovieDAO;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.io.IOException;
@@ -23,7 +21,7 @@ public class Main {
 
         //MovieService.getMovieCreditsByMovieID(280217);
 
-        MovieService.getDanishMovieFrom2019Plus("da");
+        // MovieService.getDanishMovieFrom2019Plus("da");
 
         //MovieService.getAllTheDamnGenres();
 
@@ -31,11 +29,8 @@ public class Main {
 
         GenreDAO genreDAO = new GenreDAO(emf);
 
-        //movieDAO.createMovieFromDTO();
+        movieDAO.createMovieFromDTO();
 
         //genreDAO.createGenreFromDTO();
-
-
-
     }
 }

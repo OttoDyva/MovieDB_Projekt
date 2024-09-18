@@ -2,8 +2,10 @@ package dat.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GeneratedColumn;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,11 +22,13 @@ public class Movie {
     private String title;
     private LocalDate realeaseDate;
     private String language;
+    private float vote_average;
+    private float popularity;
 
-    @ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
-    private Set<Genre> genres;
+    @ElementCollection
+    private List<String> genres;
 
-    @ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
-    private Set<Credit> credits;
+    @ElementCollection
+    private List<String> credits;
 
 }
