@@ -22,9 +22,6 @@ public class Movie {
     private String language;
 
     @ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
-    private Set<Genre> genres;
-
-    @ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
     private Set<Credit> credits;
 
 }

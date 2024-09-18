@@ -3,6 +3,7 @@ package dat.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dat.dtos.*;
+import dat.entities.Credit;
 
 import java.io.IOException;
 import java.net.URI;
@@ -209,5 +210,37 @@ public class MovieService {
         }
 
         return creditCastDTOS.toString();
+    }
+
+    public static List<CreditDTO> getMovieCredits() throws IOException, InterruptedException {
+        String url = BASE_URL_CREDITS + "/credits" + "?api_key=" + API_KEY;
+        om.registerModule(new JavaTimeModule());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        CreditListDTO creditListDTO = om.readValue(response.body(), CreditListDTO.class);
+        List<CreditDTO> creditCastDTOS = creditListDTO.getCast();
+        List<CreditDTO> creditCrewDTOS = creditListDTO.getCrew();
+
+        List<CreditDTO> allCredits = new ArrayList<>();
+        allCredits.addAll(creditCastDTOS);
+        allCredits.addAll(creditCrewDTOS);
+
+        List<CreditDTO> filteredCredits = new ArrayList<>();
+        for (CreditDTO creditDTO : allCredits) {
+            if ("Acting".equals(creditDTO.getKnown_for_department())) {
+                filteredCredits.add(creditDTO);
+            } else if ("Directing".equals(creditDTO.getKnown_for_department()) && "Director".equals(creditDTO.getJob())) {
+                filteredCredits.add(creditDTO);
+            }
+        }
+
+        return filteredCredits;
     }
 }
