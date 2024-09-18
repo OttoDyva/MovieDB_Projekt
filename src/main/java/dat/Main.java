@@ -2,6 +2,7 @@ package dat;
 
 import dat.config.HibernateConfig;
 import dat.config.MovieService;
+import dat.daos.GenreDAO;
 import dat.daos.MovieDAO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -28,6 +29,13 @@ public class Main {
 
         MovieDAO movieDAO = new MovieDAO(emf);
 
+        GenreDAO genreDAO = new GenreDAO(emf);
+
         movieDAO.createMovieFromDTO();
+
+        genreDAO.createGenreFromDTO();
+
+
+
     }
 }

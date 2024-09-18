@@ -63,6 +63,14 @@ public class MovieService {
                 .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getName));
     }
 
+    public static List<GenreDTO> convertMapOfTheDamnGenresToListOfGenreDTOs() throws IOException, InterruptedException {
+        Map<Integer, String> genreMap = getAllTheDamnGenres();
+
+        return genreMap.entrySet().stream()
+                .map(entry -> new GenreDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
     public static String getMovieById(int id) throws IOException, InterruptedException {
         String url = BASE_URL_MOVIE + id + "?api_key=" + API_KEY;
         om.registerModule(new JavaTimeModule());
@@ -110,7 +118,7 @@ public class MovieService {
                         .overview(movieDTO.getOverview())
                         .build();
                 updatedMoviesWithGenres.add(updatedMovieDTO);
-                System.out.println(updatedMoviesWithGenres.stream().toList());
+               // System.out.println(updatedMoviesWithGenres.stream().toList());
             }
         }
         return updatedMoviesWithGenres;

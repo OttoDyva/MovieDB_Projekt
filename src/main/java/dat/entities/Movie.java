@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -21,7 +22,7 @@ public class Movie {
     private String language;
 
     @OneToMany(mappedBy = "aMovie", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Genre> genres;
+    private List<Genre> genres;
 
     @OneToMany(mappedBy = "aMovie", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Credit> credits;
