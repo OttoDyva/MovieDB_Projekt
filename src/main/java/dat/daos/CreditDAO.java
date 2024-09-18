@@ -1,5 +1,7 @@
 package dat.daos;
 
+import dat.config.MovieService;
+import dat.dtos.CreditDTO;
 import dat.dtos.MovieDTO;
 import dat.entities.Credit;
 import dat.entities.Genre;
@@ -8,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,29 +65,38 @@ public class CreditDAO implements IDAO<Credit>{
         }
     }
 
-    public static Credit dtoToEntity(Credit creditDTO) {
+    public Credit dtoToEntity(CreditDTO creditDTO) {
         return Credit.builder()
                 .id(creditDTO.getId())
                 .name(creditDTO.getName())
-                .department(creditDTO.getDepartment())
+                .department(creditDTO.getKnown_for_department())
                 .job(creditDTO.getJob())
                 .build();
     }
 
-    public void createCreditFromDTO(Credit creditDTO) {
+    public void createCreditFromDTO() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
 
-            Credit creditEntity = dtoToEntity(creditDTO);
+            List<CreditDTO> creditDTOS = MovieService.getMovieCredits();
+            List<Credit> creditEntities = creditDTOS.stream()
+                    .map(this::dtoToEntity)
+                    .collect(Collectors.toList());
 
-            if (creditEntity.getId() != 0 && em.find(Movie.class, creditEntity.getId()) != null) {
-                em.merge(creditEntity);
-            } else {
-                em.persist(creditEntity);
+            for (Credit creditEntity : creditEntities) {
+                if (em.find(Credit.class, creditEntity.getId()) == null) {
+                    em.persist(creditEntity);
+                } else {
+                    em.merge(creditEntity);
+                }
             }
 
             em.getTransaction().commit();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             em.close();
         }

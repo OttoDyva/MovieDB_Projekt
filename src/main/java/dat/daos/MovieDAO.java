@@ -90,10 +90,9 @@ public class MovieDAO implements IDAO<Movie> {
                     .collect(Collectors.toList());
 
             for (Movie movieEntity : movieEntities) {
-
-
-                if (movieEntity.getId() != 0 && em.find(Movie.class, movieEntity.getId()) != null) {
-                    em.merge(movieEntity);
+                Movie existingMovie = em.find(Movie.class, movieEntity.getId());
+                if (existingMovie != null) {
+                    em.merge(existingMovie);
                 } else {
                     em.persist(movieEntity);
                 }
