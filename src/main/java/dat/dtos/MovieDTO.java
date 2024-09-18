@@ -28,4 +28,5 @@ public class MovieDTO {
                 .map(genres::get)
                 .collect(Collectors.toList());
     }
+    private List<CreditDTO> credits;
 }
