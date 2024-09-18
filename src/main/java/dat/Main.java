@@ -17,9 +17,10 @@ public class Main {
 
         //MovieService.filterMoviesByRealeaseYear();
 
-        //MovieService.getMovieCreditsByMovieID(139);
+        //MovieService.getMovieCreditsByMovieID(280217);
 
-        MovieService.getDanishMovieFrom2019Plus("da");
+       MovieService.getDanishMovieFrom2019Plus("da");
 
+        //MovieService.getAllTheDamnGenres();
     }
 }
