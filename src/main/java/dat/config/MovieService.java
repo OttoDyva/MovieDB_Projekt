@@ -9,7 +9,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MovieService {
@@ -43,7 +46,7 @@ public class MovieService {
         return allMoviesFromAllPages;
     }
 
-    private static Map<Integer, String> getAllTheDamnGenres() throws IOException, InterruptedException {
+    public static Map<Integer, String> getAllTheDamnGenres() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
                 .newBuilder()
@@ -53,6 +56,8 @@ public class MovieService {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         GenreListDTO genreListDTO = om.readValue(response.body(), GenreListDTO.class);
+
+        System.out.println(genreListDTO);
 
         return genreListDTO.getGenres().stream()
                 .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getName));
@@ -89,9 +94,11 @@ public class MovieService {
             MovieListDTO movieDTOList = om.readValue(pageResponse, MovieListDTO.class);
             List<MovieDTO> movieDTOS = movieDTOList.getResults();
 
+            // Tilføj genren til hver eneste movieDTO, efter vi har hentet skidtet.
             for (MovieDTO movieDTO : movieDTOS) {
                 List<String> genreNames = movieDTO.genreHelper(genreMap);
 
+                // Update
                 MovieDTO updatedMovieDTO = MovieDTO.builder()
                         .id(movieDTO.getId())
                         .original_title(movieDTO.getOriginal_title())
@@ -185,9 +192,9 @@ public class MovieService {
         allCredits.addAll(creditCrewDTOS);
 
         for (CreditDTO creditDTO : allCredits) {
-            if (creditDTO.getKnown_for_department().equals("Acting")) {
+            if ("Acting".equals(creditDTO.getKnown_for_department())) {
                 System.out.println("Cast: " + creditDTO);
-            } else if (creditDTO.getKnown_for_department().equals("Directing") && creditDTO.getJob().equals("Director")) {
+            } else if ("Directing".equals(creditDTO.getKnown_for_department()) && "Director".equals(creditDTO.getJob())) {
                 System.out.println("Crew: " + creditDTO);
             }
         }
