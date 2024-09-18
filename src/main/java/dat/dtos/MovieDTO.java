@@ -19,4 +19,5 @@ public class MovieDTO {
     private String original_language;
     private LocalDate release_date;
     private String overview;
+    private List<CreditDTO> credits;
 }
