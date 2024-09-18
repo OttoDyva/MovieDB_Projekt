@@ -2,25 +2,21 @@ package dat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dat.dtos.CreditDTO;
-import dat.dtos.CreditListDTO;
-import dat.dtos.MovieDTO;
-import dat.dtos.MovieListDTO;
+import dat.dtos.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MovieService {
     private static final String API_KEY = System.getenv("api_key");
     private static final String BASE_URL_MOVIE = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_DISCOVER = "https://api.themoviedb.org/3/discover/movie";
+    private static final String GENRE_LIST_URL = "https://api.themoviedb.org/3/genre/movie/list?language=en&api_key=" + API_KEY;
     private static final String BASE_URL_CREDITS = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_COUNTRY = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US";
     static ObjectMapper om = new ObjectMapper();
@@ -47,6 +43,21 @@ public class MovieService {
         return allMoviesFromAllPages;
     }
 
+    private static Map<Integer, String> fetchGenres() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(GENRE_LIST_URL))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        GenreListDTO genreListDTO = om.readValue(response.body(), GenreListDTO.class);
+
+        return genreListDTO.getGenres().stream()
+                .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getName));
+    }
+
     public static String getMovieById(int id) throws IOException, InterruptedException {
         String url = BASE_URL_MOVIE + id + "?api_key=" + API_KEY;
         om.registerModule(new JavaTimeModule());
@@ -70,16 +81,8 @@ public class MovieService {
     public static String getDanishMovieFrom2019Plus(String original_language) throws IOException, InterruptedException {
         String url = BASE_URL_COUNTRY + "&api_key=" + API_KEY;
         List<String> allPages = goThroughAllPages(url);
+        Map<Integer, String> genreMap = fetchGenres();
         om.registerModule(new JavaTimeModule());
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
 
         // Api'en er sat til at sortere efter år 2019 og danske film, så derfor er det kun film fra 2019 og frem der bliver vist.
         for (String pageResponse : allPages) {
@@ -87,12 +90,25 @@ public class MovieService {
             List<MovieDTO> movieDTOS = movieDTOList.getResults();
 
             for (MovieDTO movieDTO : movieDTOS) {
-                System.out.println(movieDTO);
+                List<String> genreNames = movieDTO.getGenreNames(genreMap);
+
+                MovieDTO updatedMovieDTO = MovieDTO.builder()
+                        .id(movieDTO.getId())
+                        .original_title(movieDTO.getOriginal_title())
+                        .genre_ids(movieDTO.getGenre_ids())
+                        .genres(genreNames)
+                        .original_language(movieDTO.getOriginal_language())
+                        .release_date(movieDTO.getRelease_date())
+                        .overview(movieDTO.getOverview())
+                        .build();
+                System.out.println(updatedMovieDTO);
             }
         }
 
-        return response.body();
+        return "Danske film fra 2019 og op.";
     }
+
+
 
     /*public static String getMovieByRating(double lowRating, double highRating) throws IOException, InterruptedException {
         String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
