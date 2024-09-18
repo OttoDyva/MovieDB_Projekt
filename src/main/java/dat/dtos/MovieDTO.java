@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -25,7 +23,7 @@ public class MovieDTO {
     private LocalDate release_date;
     private String overview;
 
-    public List<String> getGenreNames(Map<Integer, String> genres) {
+    public List<String> mapGenreIdWithGenreNames(Map<Integer, String> genres) {
         return genre_ids.stream()
                 .map(genres::get)
                 .collect(Collectors.toList());

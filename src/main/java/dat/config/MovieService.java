@@ -43,7 +43,7 @@ public class MovieService {
         return allMoviesFromAllPages;
     }
 
-    private static Map<Integer, String> fetchGenres() throws IOException, InterruptedException {
+    private static Map<Integer, String> getAllTheDamnGenres() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
                 .newBuilder()
@@ -81,7 +81,7 @@ public class MovieService {
     public static String getDanishMovieFrom2019Plus(String original_language) throws IOException, InterruptedException {
         String url = BASE_URL_COUNTRY + "&api_key=" + API_KEY;
         List<String> allPages = goThroughAllPages(url);
-        Map<Integer, String> genreMap = fetchGenres();
+        Map<Integer, String> genreMap = getAllTheDamnGenres();
         om.registerModule(new JavaTimeModule());
 
         // Api'en er sat til at sortere efter år 2019 og danske film, så derfor er det kun film fra 2019 og frem der bliver vist.
@@ -90,7 +90,7 @@ public class MovieService {
             List<MovieDTO> movieDTOS = movieDTOList.getResults();
 
             for (MovieDTO movieDTO : movieDTOS) {
-                List<String> genreNames = movieDTO.getGenreNames(genreMap);
+                List<String> genreNames = movieDTO.mapGenreIdWithGenreNames(genreMap);
 
                 MovieDTO updatedMovieDTO = MovieDTO.builder()
                         .id(movieDTO.getId())
