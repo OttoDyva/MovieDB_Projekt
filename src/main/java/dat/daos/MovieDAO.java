@@ -1,7 +1,9 @@
 package dat.daos;
 
 import dat.config.MovieService;
+import dat.dtos.CreditDTO;
 import dat.dtos.MovieDTO;
+import dat.entities.Credit;
 import dat.entities.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -73,6 +75,7 @@ public class MovieDAO implements IDAO<Movie> {
                 .vote_average(movieDTO.getVote_average())
                 .popularity(movieDTO.getPopularity())
                 .genres(movieDTO.getGenres())
+                .credits(movieDTO.getCredits())
                 .language(movieDTO.getOriginal_language())
                 .build();
     }
@@ -83,6 +86,7 @@ public class MovieDAO implements IDAO<Movie> {
         try {
             em.getTransaction().begin();
 
+            List<CreditDTO> creditsWithMovies = MovieService.getDanishMovieFrom2019PlusWithCredits();
             List<MovieDTO> movieDTOS = MovieService.getDanishMovieFrom2019Plus("da");
 
             List<Movie> movieEntities = movieDTOS.stream()
@@ -98,14 +102,25 @@ public class MovieDAO implements IDAO<Movie> {
                 }
             }
 
+            for (CreditDTO creditDTO : creditsWithMovies) {
+                CreditDAO creditDAO = new CreditDAO(emf);
+                Credit creditEntity = creditDAO.dtoToEntity(creditDTO);
+                Credit existingCredit = em.find(Credit.class, creditEntity.getId());
+                if (existingCredit != null) {
+                    em.merge(existingCredit);
+                } else {
+                    em.persist(creditEntity);
+                }
+            }
+
             em.getTransaction().commit();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
+            em.getTransaction().rollback();
             throw new RuntimeException(e);
         } finally {
             em.close();
         }
     }
+
 
 }

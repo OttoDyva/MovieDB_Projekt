@@ -20,6 +20,9 @@ public class Credit {
     private String job;
 
     @ManyToMany
-    @JoinColumn(name = "movie_id")
+    @JoinTable(name = "movie_credits",
+        joinColumns = @JoinColumn(name = "credit_id"),
+        inverseJoinColumns = @JoinColumn(name = "movie_id")
+    )
     private Set<Movie> movies;
 }

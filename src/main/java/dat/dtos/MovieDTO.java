@@ -24,7 +24,7 @@ public class MovieDTO {
     private float vote_average;
     private float popularity;
     private String overview;
-    private List<CreditDTO> credits;
+    private List<String> credits;
 
     public List<String> genreHelper(Map<Integer, String> genres) {
         return genre_ids.stream()

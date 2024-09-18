@@ -128,6 +128,47 @@ public class MovieService {
     }
 
 
+    public static List<CreditDTO> getDanishMovieFrom2019PlusWithCredits() throws IOException, InterruptedException {
+        String url = BASE_URL_COUNTRY + "&api_key=" + API_KEY;
+        List<String> allPages = goThroughAllPages(url);
+        Map<Integer, String> genreMap = getAllTheDamnGenres();
+        List<MovieDTO> updatedMoviesWithGenres = new ArrayList<>();
+        List<CreditDTO> allCredits = new ArrayList<>();
+        om.registerModule(new JavaTimeModule());
+
+        for (String pageResponse : allPages) {
+            MovieListDTO movieDTOList = om.readValue(pageResponse, MovieListDTO.class);
+            List<MovieDTO> movieDTOS = movieDTOList.getResults();
+
+            for (MovieDTO movieDTO : movieDTOS) {
+                List<String> genreNames = movieDTO.genreHelper(genreMap);
+
+                MovieDTO updatedMovieDTO = MovieDTO.builder()
+                        .id(movieDTO.getId())
+                        .original_title(movieDTO.getOriginal_title())
+                        .genre_ids(movieDTO.getGenre_ids())
+                        .genres(genreNames)
+                        .credits(movieDTO.getCredits())
+                        .vote_average(movieDTO.getVote_average())
+                        .popularity(movieDTO.getPopularity())
+                        .original_language(movieDTO.getOriginal_language())
+                        .release_date(movieDTO.getRelease_date())
+                        .overview(movieDTO.getOverview())
+                        .build();
+                updatedMoviesWithGenres.add(updatedMovieDTO);
+
+                try {
+                    List<CreditDTO> movieCredits = getMovieCreditsByMovieID(movieDTO.getId());
+                    allCredits.addAll(movieCredits);
+                    System.out.println(allCredits);
+                } catch (Exception e) {
+                    System.err.println("Failed to fetch credits for movie ID: " + movieDTO.getId() + " - " + e.getMessage());
+                }
+            }
+        }
+        return allCredits;
+    }
+
 
     /*public static String getMovieByRating(double lowRating, double highRating) throws IOException, InterruptedException {
         String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&page=1";
@@ -183,7 +224,7 @@ public class MovieService {
         return response.body();
     }
 
-    public static String getMovieCreditsByMovieID(int id) throws IOException, InterruptedException {
+    public static List<CreditDTO> getMovieCreditsByMovieID(int id) throws IOException, InterruptedException {
         String url = BASE_URL_CREDITS + id + "/credits" + "?api_key=" + API_KEY;
         om.registerModule(new JavaTimeModule());
         HttpClient client = HttpClient.newHttpClient();
@@ -203,16 +244,10 @@ public class MovieService {
         allCredits.addAll(creditCastDTOS);
         allCredits.addAll(creditCrewDTOS);
 
-        for (CreditDTO creditDTO : allCredits) {
-            if ("Acting".equals(creditDTO.getKnown_for_department())) {
-                System.out.println("Cast: " + creditDTO);
-            } else if ("Directing".equals(creditDTO.getKnown_for_department()) && "Director".equals(creditDTO.getJob())) {
-                System.out.println("Crew: " + creditDTO);
-            }
-        }
-
-        return creditCastDTOS.toString();
+        // If you want to filter or categorize the credits, you can do that here.
+        return allCredits;  // Return the collected list of credits.
     }
+
 
     public static List<CreditDTO> getMovieCredits() throws IOException, InterruptedException {
         String url = BASE_URL_CREDITS + "/credits" + "?api_key=" + API_KEY;

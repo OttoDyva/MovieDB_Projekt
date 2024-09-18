@@ -32,14 +32,15 @@ public class Main {
 
         GenreDAO genreDAO = new GenreDAO(emf);
 
-        movieDAO.createMovieFromDTO();
         CreditDAO creditDAO = new CreditDAO(emf);
+
+        movieDAO.createMovieFromDTO();
 
         //movieDAO.createMovieFromDTO();
 
         //genreDAO.createGenreFromDTO();
 
-        creditDAO.createCreditFromDTO();
+        //creditDAO.createCreditFromDTO();
 
 
     }
