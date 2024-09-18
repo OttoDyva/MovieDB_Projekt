@@ -23,7 +23,7 @@ public class MovieDTO {
     private LocalDate release_date;
     private String overview;
 
-    public List<String> mapGenreIdWithGenreNames(Map<Integer, String> genres) {
+    public List<String> genreHelper(Map<Integer, String> genres) {
         return genre_ids.stream()
                 .map(genres::get)
                 .collect(Collectors.toList());

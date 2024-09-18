@@ -90,7 +90,7 @@ public class MovieService {
             List<MovieDTO> movieDTOS = movieDTOList.getResults();
 
             for (MovieDTO movieDTO : movieDTOS) {
-                List<String> genreNames = movieDTO.mapGenreIdWithGenreNames(genreMap);
+                List<String> genreNames = movieDTO.genreHelper(genreMap);
 
                 MovieDTO updatedMovieDTO = MovieDTO.builder()
                         .id(movieDTO.getId())
