@@ -148,7 +148,6 @@ public class MovieService {
                         .original_title(movieDTO.getOriginal_title())
                         .genre_ids(movieDTO.getGenre_ids())
                         .genres(genreNames)
-                        .credits(movieDTO.getCredits())
                         .vote_average(movieDTO.getVote_average())
                         .popularity(movieDTO.getPopularity())
                         .original_language(movieDTO.getOriginal_language())
@@ -159,6 +158,7 @@ public class MovieService {
 
                 try {
                     List<CreditDTO> movieCredits = getMovieCreditsByMovieID(movieDTO.getId());
+                    movieCredits.forEach(creditDTO -> creditDTO.setMovie_id(movieDTO.getId()));
                     allCredits.addAll(movieCredits);
                     System.out.println(allCredits);
                 } catch (Exception e) {
@@ -244,8 +244,7 @@ public class MovieService {
         allCredits.addAll(creditCastDTOS);
         allCredits.addAll(creditCrewDTOS);
 
-        // If you want to filter or categorize the credits, you can do that here.
-        return allCredits;  // Return the collected list of credits.
+        return allCredits;
     }
 
 

@@ -70,6 +70,8 @@ public class CreditDAO implements IDAO<Credit>{
                 .id(creditDTO.getId())
                 .name(creditDTO.getName())
                 .department(creditDTO.getKnown_for_department())
+                .movie_id(creditDTO.getMovie_id())
+                .movies(creditDTO.getMovies())
                 .job(creditDTO.getJob())
                 .build();
     }

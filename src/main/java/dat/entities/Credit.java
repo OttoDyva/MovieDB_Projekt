@@ -3,6 +3,7 @@ package dat.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -18,11 +19,12 @@ public class Credit {
     private String name;
     private String department;
     private String job;
+    private int movie_id;
 
     @ManyToMany
-    @JoinTable(name = "movie_credits",
+    @JoinTable(name = "movie_credit",
         joinColumns = @JoinColumn(name = "credit_id"),
         inverseJoinColumns = @JoinColumn(name = "movie_id")
     )
-    private Set<Movie> movies;
+    private List<Movie> movies;
 }

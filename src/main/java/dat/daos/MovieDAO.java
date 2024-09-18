@@ -70,12 +70,12 @@ public class MovieDAO implements IDAO<Movie> {
     public Movie dtoToEntity(MovieDTO movieDTO) {
         return Movie.builder()
                 .id(movieDTO.getId())
+                .credits(movieDTO.getCredits())
                 .title(movieDTO.getOriginal_title())
                 .realeaseDate(movieDTO.getRelease_date())
                 .vote_average(movieDTO.getVote_average())
                 .popularity(movieDTO.getPopularity())
                 .genres(movieDTO.getGenres())
-                .credits(movieDTO.getCredits())
                 .language(movieDTO.getOriginal_language())
                 .build();
     }

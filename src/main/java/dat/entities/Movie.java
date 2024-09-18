@@ -2,10 +2,8 @@ package dat.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GeneratedColumn;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +26,11 @@ public class Movie {
     @ElementCollection
     private List<String> genres;
 
-    @ElementCollection
-    private List<String> credits;
+    @ManyToMany
+    @JoinTable(name = "movie_credit",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "credit_id")
+    )
+    private List<Credit> credits;
 
 }

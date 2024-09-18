@@ -1,11 +1,13 @@
 package dat.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import dat.entities.Credit;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -24,7 +26,7 @@ public class MovieDTO {
     private float vote_average;
     private float popularity;
     private String overview;
-    private List<String> credits;
+    private List<Credit> credits;
 
     public List<String> genreHelper(Map<Integer, String> genres) {
         return genre_ids.stream()
