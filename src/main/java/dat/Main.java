@@ -2,6 +2,8 @@ package dat;
 
 import dat.config.HibernateConfig;
 import dat.config.MovieService;
+import dat.daos.MovieDAO;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("moviedb");
         //MovieService.getMovieById(139);
 
         //MovieService.getMovieByReleaseYear(2023);
@@ -19,8 +22,12 @@ public class Main {
 
         //MovieService.getMovieCreditsByMovieID(280217);
 
-       MovieService.getDanishMovieFrom2019Plus("da");
+        //MovieService.getDanishMovieFrom2019Plus("da");
 
         //MovieService.getAllTheDamnGenres();
+
+        MovieDAO movieDAO = new MovieDAO(emf);
+
+        movieDAO.createMovieFromDTO();
     }
 }

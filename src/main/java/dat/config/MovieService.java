@@ -57,7 +57,7 @@ public class MovieService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         GenreListDTO genreListDTO = om.readValue(response.body(), GenreListDTO.class);
 
-        System.out.println(genreListDTO);
+        //System.out.println(genreListDTO);
 
         return genreListDTO.getGenres().stream()
                 .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getName));
@@ -83,10 +83,11 @@ public class MovieService {
         return movieDTO.toString();
     }
 
-    public static String getDanishMovieFrom2019Plus(String original_language) throws IOException, InterruptedException {
+    public static List<MovieDTO> getDanishMovieFrom2019Plus(String original_language) throws IOException, InterruptedException {
         String url = BASE_URL_COUNTRY + "&api_key=" + API_KEY;
         List<String> allPages = goThroughAllPages(url);
         Map<Integer, String> genreMap = getAllTheDamnGenres();
+        List<MovieDTO> updatedMoviesWithGenres = new ArrayList<>();
         om.registerModule(new JavaTimeModule());
 
         // Api'en er sat til at sortere efter år 2019 og danske film, så derfor er det kun film fra 2019 og frem der bliver vist.
@@ -108,11 +109,11 @@ public class MovieService {
                         .release_date(movieDTO.getRelease_date())
                         .overview(movieDTO.getOverview())
                         .build();
-                System.out.println(updatedMovieDTO);
+                updatedMoviesWithGenres.add(updatedMovieDTO);
+                System.out.println(updatedMoviesWithGenres.stream().toList());
             }
         }
-
-        return "Danske film fra 2019 og op.";
+        return updatedMoviesWithGenres;
     }
 
 
