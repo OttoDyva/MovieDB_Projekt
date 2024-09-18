@@ -22,11 +22,11 @@ public class MovieDTO {
     private String original_language;
     private LocalDate release_date;
     private String overview;
+    private List<CreditDTO> credits;
 
     public List<String> genreHelper(Map<Integer, String> genres) {
         return genre_ids.stream()
                 .map(genres::get)
                 .collect(Collectors.toList());
     }
-    private List<CreditDTO> credits;
 }
