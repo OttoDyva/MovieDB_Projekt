@@ -15,8 +15,4 @@ public class Genre {
     @Id
     private int id;
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie aMovie;
 }

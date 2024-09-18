@@ -21,9 +21,10 @@ public class Movie {
     private LocalDate realeaseDate;
     private String language;
 
-    @OneToMany(mappedBy = "aMovie", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Genre> genres;
+    @ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
+    private Set<Genre> genres;
 
-    @OneToMany(mappedBy = "aMovie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "movies", cascade = CascadeType.ALL)
     private Set<Credit> credits;
+
 }

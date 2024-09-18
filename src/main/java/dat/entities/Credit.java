@@ -3,6 +3,8 @@ package dat.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class Credit {
     private String department;
     private String job;
 
-    @ManyToOne
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie aMovie;
+    @ManyToMany
+    @JoinColumn(name = "movie_id")
+    private Set<Movie> movies;
 }

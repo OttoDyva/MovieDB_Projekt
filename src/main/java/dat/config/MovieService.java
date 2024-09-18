@@ -118,7 +118,7 @@ public class MovieService {
                         .overview(movieDTO.getOverview())
                         .build();
                 updatedMoviesWithGenres.add(updatedMovieDTO);
-               // System.out.println(updatedMoviesWithGenres.stream().toList());
+               System.out.println(updatedMoviesWithGenres.stream().toList());
             }
         }
         return updatedMoviesWithGenres;

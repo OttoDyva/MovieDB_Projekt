@@ -1,6 +1,5 @@
 package dat.daos;
 
-import dat.config.HibernateConfig;
 import dat.config.MovieService;
 import dat.dtos.MovieDTO;
 import dat.entities.Movie;
@@ -14,20 +13,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MovieDAO implements IDAO<Movie> {
-    EntityManagerFactory emf ;
+    EntityManagerFactory emf;
 
     public MovieDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
 
-    public Movie dtoToEntity(MovieDTO movieDTO) {
-        return Movie.builder()
-                .id(movieDTO.getId())
-                .title(movieDTO.getOriginal_title())
-                .realeaseDate(movieDTO.getRelease_date())
-                .language(movieDTO.getOriginal_language())
-                .build();
-    }
 
     @Override
     public Movie getByID(Integer id) {
@@ -57,6 +48,7 @@ public class MovieDAO implements IDAO<Movie> {
     @Override
     public void update(Movie movie) {
         try (EntityManager em = emf.createEntityManager()) {
+
             em.getTransaction().begin();
             em.merge(movie);
             em.getTransaction().commit();
@@ -72,6 +64,18 @@ public class MovieDAO implements IDAO<Movie> {
             em.getTransaction().commit();
         }
     }
+
+    public Movie dtoToEntity(MovieDTO movieDTO) {
+        return Movie.builder()
+                .id(movieDTO.getId())
+                .title(movieDTO.getOriginal_title())
+                .realeaseDate(movieDTO.getRelease_date())
+                //Cook here
+                //.genres()
+                .language(movieDTO.getOriginal_language())
+                .build();
+    }
+
 
     public void createMovieFromDTO() {
         EntityManager em = emf.createEntityManager();

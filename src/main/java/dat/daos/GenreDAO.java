@@ -78,21 +78,18 @@ public class GenreDAO implements IDAO<Genre> {
             em.getTransaction().begin();
 
             List<GenreDTO> genreDTOS = MovieService.convertMapOfTheDamnGenresToListOfGenreDTOs();
-
             List<Genre> genreEntities = genreDTOS.stream()
                     .map(this::dtoToEntity)
                     .collect(Collectors.toList());
 
             for (Genre genreEntity : genreEntities) {
 
-
-                if (genreEntity.getId() != 0 && em.find(Genre.class, genreEntity.getId()) != null) {
+                if (em.find(Genre.class, genreEntity.getId()) != null) {
                     em.merge(genreEntity);
                 } else {
                     em.persist(genreEntity);
                 }
             }
-
             em.getTransaction().commit();
         } catch (IOException e) {
             throw new RuntimeException(e);
