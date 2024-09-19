@@ -49,7 +49,9 @@ public class Main {
         //movieDAO.getAllMoviesWithCredits();
 
         //movieDAO.searchMovieWithCredits("lego");
-        movieDAO.createMovieFromDTO();
+
+         //movieDAO.createMovieFromDTO();
+
         //movieDAO.createMovieFromDTO();
 
         //movieDAO.createMovieFromDTO();
