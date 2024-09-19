@@ -46,7 +46,6 @@ public class GenreDAO implements IDAO<Genre> {
         }
     }
 
-    @Override
     public void update(Genre genre) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

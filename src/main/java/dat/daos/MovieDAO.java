@@ -7,6 +7,7 @@ import dat.entities.Credit;
 import dat.entities.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 
 import java.io.IOException;
@@ -32,8 +33,9 @@ public class MovieDAO implements IDAO<Movie> {
     @Override
     public Set<Movie> getAll() {
         try (EntityManager em = emf.createEntityManager()) {
-            TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m", Movie.class);
+            TypedQuery<Movie> query = em.createNamedQuery("Movie.findAllMovies", Movie.class);
             List<Movie> movieList = query.getResultList();
+            System.out.println("All movies: " + movieList);
             return movieList.stream().collect(Collectors.toSet());
         }
     }
@@ -49,13 +51,24 @@ public class MovieDAO implements IDAO<Movie> {
         }
     }
 
-    @Override
-    public void update(Movie movie) {
-        try (EntityManager em = emf.createEntityManager()) {
+    public Movie update(Movie movie) {
+        try(EntityManager em = emf.createEntityManager()) {
+            Movie found = em.find(Movie.class, movie.getId());
+            if(found == null) {
+                throw new EntityNotFoundException("No entity with that id");
+            }
 
             em.getTransaction().begin();
-            em.merge(movie);
+            if(movie.getTitle() != null) {
+                found.setTitle(movie.getTitle());
+            }
+            if(movie.getRealeaseDate() != null) {
+                found.setRealeaseDate(movie.getRealeaseDate());
+            }
+
+            //em.merge(found);
             em.getTransaction().commit();
+            return found;
         }
     }
 
@@ -66,6 +79,26 @@ public class MovieDAO implements IDAO<Movie> {
             Movie movieIWishToDestroy = em.find(Movie.class, movie.getId());
             em.remove(movieIWishToDestroy);
             em.getTransaction().commit();
+        }
+    }
+
+
+    public Set<Movie> findAverageMovieRating() {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> query = em.createNamedQuery("Movie.findAverageRating", Movie.class);
+            List<Movie> movieList = query.getResultList();
+            System.out.println("Average rating: " + movieList);
+            return movieList.stream().collect(Collectors.toSet());
+        }
+    }
+
+    public Set<Movie> findTop10MostPopularMovies() {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> query = em.createNamedQuery("Movie.findMostPopularMovies", Movie.class);
+            query.setMaxResults(10);
+            List<Movie> popularMovies = query.getResultList();
+            System.out.println("10 Most popular movies: " + popularMovies);
+            return popularMovies.stream().collect(Collectors.toSet());
         }
     }
 

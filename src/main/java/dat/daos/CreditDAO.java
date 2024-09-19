@@ -46,7 +46,6 @@ public class CreditDAO implements IDAO<Credit>{
 
     }
 
-    @Override
     public void update(Credit credit) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

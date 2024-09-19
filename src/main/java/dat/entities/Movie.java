@@ -15,7 +15,9 @@ import java.util.Set;
 @ToString
 @Entity
 @NamedQueries( {
-        //@NamedQuery(name = "Movie.findBy", query = "SELECT e FROM Employee e WHERE e.name = :name"),
+        @NamedQuery(name = "Movie.findAverageRating", query = "SELECT AVG(m.vote_average) FROM Movie m"),
+        @NamedQuery(name = "Movie.findMostPopularMovies", query = "SELECT m FROM Movie m ORDER BY m.popularity DESC"),
+        @NamedQuery(name = "Movie.findAllMovies", query = "SELECT m FROM Movie m"),
 })
 public class Movie {
     @Id
