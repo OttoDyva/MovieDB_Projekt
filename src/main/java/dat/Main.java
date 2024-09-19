@@ -1,11 +1,9 @@
 package dat;
 
 import dat.config.HibernateConfig;
-import dat.config.MovieService;
 import dat.daos.CreditDAO;
 import dat.daos.GenreDAO;
 import dat.daos.MovieDAO;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.io.IOException;
@@ -40,14 +38,17 @@ public class Main {
 
         //movieDAO.searchByTitle(" ");
 
-        movieDAO.createMovieFromDTO();
+        //movieDAO.createMovieFromDTO();
+
+        //movieDAO.getAllMoviesWithCredits();
+
+        //movieDAO.searchMovieWithCredits("lego");
 
         //movieDAO.createMovieFromDTO();
 
         //genreDAO.createGenreFromDTO();
 
         //creditDAO.createCreditFromDTO();
-
 
     }
 }

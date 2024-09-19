@@ -40,7 +40,6 @@ public class MovieDAO implements IDAO<Movie> {
     }
 
 
-
     @Override
     public void create(Movie movie) {
         try (EntityManager em = emf.createEntityManager()) {
@@ -71,16 +70,7 @@ public class MovieDAO implements IDAO<Movie> {
     }
 
     public Movie dtoToEntity(MovieDTO movieDTO) {
-        return Movie.builder()
-                .id(movieDTO.getId())
-                .credits(movieDTO.getCredits())
-                .title(movieDTO.getOriginal_title())
-                .realeaseDate(movieDTO.getRelease_date())
-                .vote_average(movieDTO.getVote_average())
-                .popularity(movieDTO.getPopularity())
-                .genres(movieDTO.getGenres())
-                .language(movieDTO.getOriginal_language())
-                .build();
+        return Movie.builder().id(movieDTO.getId()).credits(movieDTO.getCredits()).title(movieDTO.getOriginal_title()).realeaseDate(movieDTO.getRelease_date()).vote_average(movieDTO.getVote_average()).popularity(movieDTO.getPopularity()).genres(movieDTO.getGenres()).language(movieDTO.getOriginal_language()).build();
     }
 
 
@@ -92,9 +82,7 @@ public class MovieDAO implements IDAO<Movie> {
             List<CreditDTO> creditsWithMovies = MovieService.getDanishMovieFrom2019PlusWithCredits();
             List<MovieDTO> movieDTOS = MovieService.getDanishMovieFrom2019Plus("da");
 
-            List<Movie> movieEntities = movieDTOS.stream()
-                    .map(this::dtoToEntity)
-                    .collect(Collectors.toList());
+            List<Movie> movieEntities = movieDTOS.stream().map(this::dtoToEntity).collect(Collectors.toList());
 
             for (Movie movieEntity : movieEntities) {
                 Movie existingMovie = em.find(Movie.class, movieEntity.getId());
@@ -155,4 +143,68 @@ public class MovieDAO implements IDAO<Movie> {
         }
     }
 
+    public void getAllMoviesWithCredits() {
+
+        try (EntityManager em = emf.createEntityManager()) {
+            String queryStr = "SELECT m FROM Movie m";
+            TypedQuery<Movie> movieQuery = em.createQuery(queryStr, Movie.class);
+            List<Movie> moviesFound = movieQuery.getResultList();
+
+            if (moviesFound.isEmpty()) {
+                System.out.println("Kaput");
+                return;
+            }
+
+            for (Movie movie : moviesFound) {
+                System.out.println("\n\nMovie: " + movie.getTitle());
+
+                String creditQueryStr = "SELECT c FROM Credit c WHERE c.movie_id = :movieId";
+                TypedQuery<Credit> creditQuery = em.createQuery(creditQueryStr, Credit.class);
+                creditQuery.setParameter("movieId", movie.getId());
+                List<Credit> credits = creditQuery.getResultList();
+
+                for (Credit credit : credits) {
+                    if ("Director".equals(credit.getJob()) && "Directing".equals(credit.getDepartment())) {
+                        System.out.println("  Castmember Name: " + credit.getName() + ", Role: " + credit.getJob());
+                    } else if ("Acting".equals(credit.getDepartment())) {
+                        System.out.println("  Castmember Name: " + credit.getName() + ", Role: " + credit.getDepartment());
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void searchMovieWithCredits(String search) {
+        List<Movie> moviesFound = searchByTitle(search);
+
+        if (moviesFound.isEmpty()) {
+            System.out.println("No movie found bro " + search);
+            return;
+        }
+
+        System.out.println("You have searched for: " + search);
+        System.out.println("Results:");
+
+        try (EntityManager em = emf.createEntityManager()) {
+            for (Movie movie : moviesFound) {
+                System.out.println("\n\nMovie: " + movie.getTitle());
+
+                String queryStr = "SELECT c FROM Credit c WHERE c.movie_id = :movieId";
+                TypedQuery<Credit> creditQuery = em.createQuery(queryStr, Credit.class);
+                creditQuery.setParameter("movieId", movie.getId());
+                List<Credit> credits = creditQuery.getResultList();
+
+                for (Credit credit : credits) {
+                    if ("Director".equals(credit.getJob()) && "Directing".equals(credit.getDepartment())) {
+                        System.out.println("  Castmember Name: " + credit.getName() + ", Role: " + credit.getJob());
+                    } else if ("Acting".equals(credit.getDepartment())) {
+                        System.out.println("  Castmember Name: " + credit.getName() + ", Role: " + credit.getDepartment());
+                    }
+                }
+            }
+        }
+    }
 }
+
+
