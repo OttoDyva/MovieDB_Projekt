@@ -14,6 +14,9 @@ import java.util.Set;
 @Builder
 @ToString
 @Entity
+@NamedQueries( {
+        //@NamedQuery(name = "Movie.findBy", query = "SELECT e FROM Employee e WHERE e.name = :name"),
+})
 public class Movie {
     @Id
     private int id;
