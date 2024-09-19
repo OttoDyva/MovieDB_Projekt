@@ -34,6 +34,12 @@ public class Main {
 
         CreditDAO creditDAO = new CreditDAO(emf);
 
+        //movieDAO.top10ByRating();
+
+        //movieDAO.worst10ByRating();
+
+        //movieDAO.searchByTitle(" ");
+
         movieDAO.createMovieFromDTO();
 
         //movieDAO.createMovieFromDTO();
