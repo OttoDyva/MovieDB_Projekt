@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class MovieDAO implements IDAO<Movie> {
     EntityManagerFactory emf;
 
+
     public MovieDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
@@ -157,5 +158,34 @@ public class MovieDAO implements IDAO<Movie> {
         }
     }
 
+    public List<Movie> top10ByRating() {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> top10Query = em.createNamedQuery("Movie.top10BestByRating", Movie.class);
+            top10Query.setMaxResults(10);
+            List<Movie> top10Movies = top10Query.getResultList();
+            System.out.println("\n" + top10Movies);
+            return top10Movies;
+        }
+    }
+
+    public List<Movie> worst10ByRating() {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> worst10Query = em.createNamedQuery("Movie.worst10ByRating", Movie.class);
+            worst10Query.setMaxResults(10);
+            List<Movie> worst10Movies = worst10Query.getResultList();
+            System.out.println("\n" + worst10Movies);
+            return worst10Movies;
+        }
+    }
+
+    public List<Movie> searchByTitle(String search) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> movieSearch = em.createNamedQuery("Movie.searchMovieByTitle", Movie.class);
+            movieSearch.setParameter("title", "%" + search.toLowerCase() + "%");
+            List<Movie> moviesFound = movieSearch.getResultList();
+            System.out.println(moviesFound);
+            return moviesFound;
+        }
+    }
 
 }

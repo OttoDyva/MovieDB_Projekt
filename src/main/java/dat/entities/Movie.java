@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -18,6 +17,9 @@ import java.util.Set;
         @NamedQuery(name = "Movie.findAverageRating", query = "SELECT AVG(m.vote_average) FROM Movie m"),
         @NamedQuery(name = "Movie.findMostPopularMovies", query = "SELECT m FROM Movie m ORDER BY m.popularity DESC"),
         @NamedQuery(name = "Movie.findAllMovies", query = "SELECT m FROM Movie m"),
+        @NamedQuery(name = "Movie.top10BestByRating", query =  "SELECT m FROM Movie m ORDER BY m.vote_average DESC"),
+        @NamedQuery(name = "Movie.worst10ByRating", query = "SELECT m FROM Movie m ORDER BY m.vote_average ASC"),
+        @NamedQuery(name = "Movie.searchMovieByTitle", query = "SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(:title)")
 })
 public class Movie {
     @Id
