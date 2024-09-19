@@ -1,7 +1,6 @@
 package dat;
 
 import dat.config.HibernateConfig;
-import dat.config.MovieService;
 import dat.daos.CreditDAO;
 import dat.daos.GenreDAO;
 import dat.daos.MovieDAO;
@@ -45,6 +44,11 @@ public class Main {
 
         //movieDAO.searchByTitle(" ");
 
+        //movieDAO.createMovieFromDTO();
+
+        //movieDAO.getAllMoviesWithCredits();
+
+        //movieDAO.searchMovieWithCredits("lego");
         movieDAO.createMovieFromDTO();
         //movieDAO.createMovieFromDTO();
 
